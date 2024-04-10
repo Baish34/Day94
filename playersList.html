@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+  </script>
+</head>
+
+<body>
+  <header>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">ICC Player Management</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="playersList.html">Players List</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="addPlayers.html">Add Players</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container py-4">
+    <h1>Player List</h1>
+    <div>
+      <label for="playingRoleFilter">Filter By Playing Role:</label>
+      <select id="playingRoleFilter" class="form-control" style="appearance: auto;">
+        <option value="allRounder">All-rounder</option>
+        <option value="Batsman">Batsman</option>
+        <option value="Bowler">Bowler</option>
+      </select><br>
+    </div>
+    <div id="successMessage"></div>
+    <ul id="playerList" class="list-group"></ul>
+  </main>
+
+  <script>
+    const apiUrl = 'https://players-backend-student-neog-ca.replit.app/players'
+    const playerList = document.querySelector('#playerList')
+    const successMessage = document.querySelector("#successMessage")
+    const playingRoleFilter = document.querySelector("#playingRoleFilter")
+
+    function fetchData() {
+      playerList.textContent = 'Loading...'
+
+      fetch(apiUrl)
+        .then(function (response) {
+          return response.json()
+        })
+        .then(function (data) {
+          if (data) {
+            playerList.textContent = ""
+            successMessage.textContent = ""
+
+            let filteredData = data;
+
+            if (playingRoleFilter.value !== 'allRounder') {
+              filteredData = [];
+              for (let i = 0; i < data.length; i++) {
+                if (data[i].playingRole === playingRoleFilter.value) {
+                  filteredData.push(data[i]);
+                }
+              }
+            }
+
+            for (let i = 0; i < filteredData.length; i++) {
+              const liElements = document.createElement('li')
+              liElements.className = "list-group-item"
+              liElements.innerHTML = `${filteredData[i].fullName} - Playing Role: ${filteredData[i].playingRole} - Nationality: ${filteredData[i].nationality} <button class="btn btn-danger float-end" data-id="${filteredData[i]._id}" id="deleteBtn">Delete</button>`
+              playerList.appendChild(liElements)
+            }
+          }
+          const deleteButtons = document.querySelectorAll("#deleteBtn")
+          for (let i = 0; i < deleteButtons.length; i++) {
+            deleteButtons[i].addEventListener("click", function (event) {
+              const playerId = event.target.getAttribute('data-id')
+              const apiDeleteUrl = `https://players-backend-student-neog-ca.replit.app/players/${playerId}`
+
+              fetch(apiDeleteUrl, {
+                method: "DELETE",
+              }).then(function (response) {
+                return response.json()
+              }).then(function (data) {
+                if (data) {
+                  successMessage.textContent = ""
+
+                  fetchData()
+                }
+              })
+            })
+          }
+
+        }).catch(function (error) {
+          playerList.textContent = "An error occured while fetching data."
+        })
+    }
+
+    playingRoleFilter.addEventListener('change', function () {
+      fetchData();
+    });
+
+    fetchData();
+
+  </script>
+</body>
+
+</html>

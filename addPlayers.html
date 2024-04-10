@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+  </script>
+  <style>
+    #loading {
+      display: none;
+    }
+
+    #success {
+      display: none;
+      color: green;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">ICC Player Management</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="playersList.html">Players List</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="addPlayers.html">Add Players</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container py-4">
+    <h1>Add Players</h1>
+
+    <form id="addPlayer">
+      <label for="fullName" class="mb-2">Player Full Name:</label>
+      <input type="text" id="fullName" class="form-control" required /><br>
+      <label for="dateOfBirth" class="mb-2">Date Of Birth:</label>
+      <input type="date" id="dateOfBirth" class="form-control" required /><br>
+      <label for="nationality" class="mb-2">Nationality:</label>
+      <input type="text" id="nationality" class="form-control" required /><br>
+      <label for="placeOfBirth" class="mb-2">Place Of Birth:</label>
+      <input type="text" id="placeOfBirth" class="form-control" required /><br>
+      <label for="contactAddress" class="mb-2">Contact Address:</label>
+      <textarea type="text" id="contactAddress" class="form-control" required></textarea><br>
+      <label for="phoneNumber" class="mb-2">Phone Number:</label>
+      <input type="number" id="phoneNumber" class="form-control" required /><br>
+      <label for="emailAddress" class="mb-2">Email Address:</label>
+      <input type="email" id="emailAddress" class="form-control" required /><br>
+      <label for="playingRole" class="mb-2">Playing Role:</label>
+      <select id="playingRole" class="form-control" style="appearance: auto;" required>
+        <option value="Batsman">Batsman</option>
+        <option value="Bowler">Bowler</option>
+        <option value="allRounder">All-Rounder</option>
+      </select
+        ><br>
+      <label for="battingHand" class="mb-2">Batting Hand:</label>
+      <select id="battingHand" class="form-control" style="appearance: auto;" required>
+        <option value="Right Handed">Right Handed</option>
+        <option value="Left Handed">Left Handed</option>
+        <option value="Both">Both</option>
+      </select><br>
+      <label for="bowlingStyle" class="mb-2">Bowling Style:</label>
+      <select id="bowlingStyle" class="form-control" style="appearance: auto;" required>
+        <option value="rightArmFast">Right-Arm-Fast</option>
+        <option value="leftArmFast">Left-Arm-Fast</option>
+        <option value="rightArmMedium">Right-Arm-Medium</option>
+        <option value="leftArmMedium">Left-Arm-Medium</option>
+        <option value="rightArmSpin">Right-Arm-Spin (off-spin)</option>
+        <option value="leftArmSpin">Left-Arm-Spin (off-spin)</option>
+      </select><br>
+      <button type="submit" class="btn btn-primary">Add Players</button>
+    </form>
+  </main>
+
+  <div id="loading" class="container">Saving Data...</div>
+  <div id="success" class="container">Player Added Successfully!</div>
+
+  <script>
+    const addPlayer = document.querySelector("#addPlayer")
+    const fullName = document.querySelector("#fullName")
+    const dateOfBirth = document.querySelector("#dateOfBirth")
+    const nationality = document.querySelector("#nationality")
+    const placeOfBirth = document.querySelector("#placeOfBirth")
+    const contactAddress = document.querySelector("#contactAddress")
+    const phoneNumber = document.querySelector("#phoneNumber")
+    const emailAddress = document.querySelector("#emailAddress")
+    const playingRole = document.querySelector("#playingRole")
+    const battingHand = document.querySelector("#battingHand")
+    const bowlingStyle = document.querySelector("#bowlingStyle")
+    const loadingContainer = document.querySelector("#loading")
+    const successContainer = document.querySelector("#success")
+    const apiUrl = 'https://players-backend-student-neog-ca.replit.app/players'
+
+    addPlayer.addEventListener("submit", function (event) {
+      event.preventDefault()
+      loadingContainer.style.display = "block"
+
+      const PlayerData = {
+        fullName: fullName.value,
+        dateOfBirth: dateOfBirth.value,
+        nationality: nationality.value,
+        placeOfBirth: placeOfBirth.value,
+        contactAddress: contactAddress.value,
+        phoneNumber: phoneNumber.value,
+        emailAddress: emailAddress.value,
+        playingRole: playingRole.value,
+        battingHand: battingHand.value,
+        bowlingStyle: bowlingStyle.value
+      }
+
+      fetch(apiUrl, {
+        method: "POST",
+        body: JSON.stringify(PlayerData),
+        headers: {
+          'content-Type': 'application/json'
+        }
+      })
+        .then(function (response) {
+          return response.json()
+        })
+        .then(function (data) {
+          if (data) {
+            loadingContainer.style.display = "none"
+            successContainer.style.display = "block"
+          }
+        })
+    })
+  </script>
+</body>
+
+</html>
